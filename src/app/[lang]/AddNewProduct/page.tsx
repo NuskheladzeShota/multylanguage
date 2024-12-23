@@ -85,11 +85,8 @@ export default function AddNewProduct() {
           }
         ]).single();
 
-
-      alert("Product added successfully!");
     } catch (error) {
       console.error("Error adding product:", error);
-      alert(`Error: ${(error as Error).message}`);
     }
   }
 
@@ -98,8 +95,7 @@ export default function AddNewProduct() {
       <div className="addNewProduct-Info">
         {/* Title Inputs */}
         <div
-          style={{ borderBottom: "2px solid #98cddf", marginBottom: "20px" }}
-        >
+          style={{ borderBottom: "2px solid #98cddf", marginBottom: "20px" }}>
           <h3>ინფორმაცია</h3>
         </div>
         <div
@@ -250,8 +246,7 @@ export default function AddNewProduct() {
             ))}
           </div>
         </div>
-      </div>
-      <button
+        <button
         style={{
           padding: "10px",
           marginTop: "20px",
@@ -260,10 +255,11 @@ export default function AddNewProduct() {
           border: "none",
           borderRadius: "5px",
         }}
-        type="submit"
-      >
+        type="submit">
         Add Product to Stripe
       </button>
+      </div>
+
     </form>
   );
 }
