@@ -1,8 +1,9 @@
 import React from "react";
 import "./ProductCard.css";
-import Link from "next/link";
+// import Link from "next/link";
 // import { useTranslations } from "next-intl";
 import { Product } from "./fetchProducts";
+import ProductPurchase from "../../components/CheckoutButton/CheckoutButton";
 
 interface ProductCardProps {
   product: Product;
@@ -33,13 +34,13 @@ export default function ProductCard({
       <div>
         {/* <button className="button">{t("Add to cart")}</button> */}
         <button className="button">Add to cart</button>
-        <Link
+        {/* <Link
           href={`/${locale}/products/${product.id}`}
           className="moreCardBtn"
         >
-          {/* {t("More details")} */}
           BUY Now
-        </Link>
+        </Link> */}
+        <ProductPurchase productId={product.stripe_product_id} />
       </div>
     </div>
   );

@@ -14,7 +14,7 @@ export default async function Products({
   const productTitle = locale === "ka" ? "პროდუქტები" : "Item shop";
   return (
     <div className="container dark:text-white">
-      <button>buy</button>
+      {/* <button>buy</button> */}
       <h2 style={{ textAlign: "center" }} className="margin-top-20px">
         {productTitle}
       </h2>
