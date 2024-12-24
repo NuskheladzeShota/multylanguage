@@ -128,7 +128,12 @@ const Header = (dict) => {
                 {dict.dict.Blog}
               </li>
             </Link>
-            <Link href={`/${locale}/products`}>
+            {/* <Link href={`/${locale}/products`}>
+              <li className={`${listItemStyle} hidden xl:block`}>
+                {dict.dict.Products}
+              </li>
+            </Link> */}
+            <Link href={`/${locale}/product-list`}>
               <li className={`${listItemStyle} hidden xl:block`}>
                 {dict.dict.Products}
               </li>
