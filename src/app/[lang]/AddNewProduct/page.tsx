@@ -1,18 +1,14 @@
-import React from "react";
-import Stripe from "stripe";
-import {createClient} from "../../lib/supaBase/server";
+"use client";
+import React, { useState } from "react";
 import "./style.css";
 
 let tagArray = ["", "", ""]; // Predefined empty tags for the UI
 
 export default function AddNewProduct() {
-  async function submitProduct(formData: FormData) {
-    "use server";
+  const [message, setMessage] = useState<string | null>(null); // State for the success or error message
 
+  async function submitProduct(formData: FormData, formElement: HTMLFormElement) {
     try {
-      // Initialize Stripe
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
-      const  supabase = await createClient();
       // Collect form data
       const title_en = formData.get("title_en") as string;
       const title_ge = formData.get("title_ge") as string;
@@ -27,7 +23,7 @@ export default function AddNewProduct() {
       const tags: string[] = [];
       for (let i = 0; i < tagArray.length; i++) {
         const tag = formData.get(`tag-${i}`) as string;
-        if (tag?.trim()) tags.push(tag.trim()); // Add non-empty, trimmed tags
+        if (tag?.trim()) tags.push(tag.trim());
       }
 
       // Validate required fields
@@ -35,29 +31,7 @@ export default function AddNewProduct() {
         throw new Error("Please fill out all required fields.");
       }
 
-      // Create a product in Stripe
-      const product = await stripe.products.create({
-        name: title_en,
-        description: description_en,
-        metadata: {
-          title_ge,
-          description_ge,
-          gender,
-          category,
-          price,
-          size,
-          tags: tags.join(", "), // Save tags as a comma-separated string in metadata
-        },
-      });
-
-      // Create a price for the product
-      await stripe.prices.create({
-        product: product.id,
-        unit_amount: parseInt(price) * 100, // Convert price to cents
-        currency: "usd",
-      });
-
-      console.log("Product created successfully:", {
+      const productData = {
         title_en,
         title_ge,
         description_en,
@@ -67,199 +41,202 @@ export default function AddNewProduct() {
         price,
         size,
         tags,
-      });
-  const { data: productData, error: productError } = await supabase
-        .from("products")
-        .insert([
-          {
-            title_en,
-            title_ge,
-            description_en,
-            description_ge,
-            gender,
-            category,
-            price,
-            size,
-            tags,
-            stripe_product_id: product.id
-          }
-        ]).single();
+      };
 
+      // Send the product data to the API
+      const response = await fetch("/api/addProduct", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(productData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to add product: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log("Product added successfully:", result);
+
+      // Clear the form inputs
+      formElement.reset();
+
+      // Set success message
+      setMessage("Product added successfully!");
+      hideMessageAfterDelay();
     } catch (error) {
       console.error("Error adding product:", error);
+      // Set error message
+      setMessage("Error adding product. Please try again.");
+      hideMessageAfterDelay();
     }
   }
 
+  const hideMessageAfterDelay = () => {
+    setTimeout(() => {
+      setMessage(null);
+    }, 1000); // Hide message after 3 seconds
+  };
+
+  // Handle form submission
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // Prevent default form submission
+    const formData = new FormData(event.currentTarget); // Create FormData from the form
+    submitProduct(formData, event.currentTarget); // Pass form element to clear inputs
+  };
+
   return (
-    <form action={submitProduct} className="addNewProduct-container">
-      <div className="addNewProduct-Info">
-        {/* Title Inputs */}
-        <div
-          style={{ borderBottom: "2px solid #98cddf", marginBottom: "20px" }}>
-          <h3>ინფორმაცია</h3>
-        </div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "20px",
-          }}
-        >
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={{ marginBottom: "10px" }} htmlFor="title_en">
-              Title
-            </label>
-            <input
-              style={{ padding: "10px" }}
-              id="title_en"
-              placeholder="Title"
-              type="text"
-              name="title_en"
-              required
-            />
+    <div className="addNewProduct-container">
+      <form onSubmit={handleSubmit} className="addNewProduct-form">
+        <div className="addNewProduct-Info">
+          <div style={{ borderBottom: "2px solid #98cddf", marginBottom: "20px" }}>
+            <h3>ინფორმაცია</h3>
           </div>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={{ marginBottom: "auto" }}>სათაური</label>
-            <input
-              style={{ padding: "10px" }}
-              id="title_ge"
-              name="title_ge"
-              placeholder="სათაური"
-              type="text"
-              required
-            />
-          </div>
-        </div>
-
-        {/* Description Inputs */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "20px",
-            marginTop: "20px",
-          }}
-        >
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={{ marginBottom: "10px" }}>Description</label>
-            <textarea
-              style={{ height: "100px", padding: "10px" }}
-              id="description_en"
-              placeholder="Description"
-              name="description_en"
-            />
-          </div>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={{ marginBottom: "auto" }}>აღწერა</label>
-            <textarea
-              style={{ height: "100px", padding: "10px" }}
-              id="description_ge"
-              placeholder="აღწერა"
-              name="description_ge"
-              required
-            />
-          </div>
-        </div>
-
-        {/* Additional Inputs */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr 1fr",
-            gap: "20px",
-            marginTop: "20px",
-          }}
-        >
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={{ marginBottom: "10px" }}>Gender</label>
-            <select id="gender" style={{ padding: "10px" }} name="gender">
-              <option value="woman">ქალი</option>
-              <option value="man">კაცი</option>
-              <option value="girl">გოგო</option>
-              <option value="boy">ბიჭი</option>
-            </select>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={{ marginBottom: "10px" }}>Category</label>
-            <select id="category" style={{ padding: "10px" }} name="category">
-              <option value="pants">შარვალი</option>
-              <option value="jeans">ჯინსი</option>
-              <option value="shorts">შორტები</option>
-              <option value="coat">ქურთუკი</option>
-            </select>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={{ marginBottom: "10px" }}>Size</label>
-            <select id="size" style={{ padding: "10px" }} name="size">
-              <option value="xs">XS</option>
-              <option value="s">S</option>
-              <option value="m">M</option>
-              <option value="l">L</option>
-            </select>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={{ marginBottom: "10px" }}>Price</label>
-            <input
-              id="price"
-              name="price"
-              style={{ padding: "10px" }}
-              placeholder="Price"
-              type="number"
-              required
-            />
-          </div>
-        </div>
-
-        {/* Tags */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            marginTop: "20px",
-          }}
-        >
-          <div
-            style={{
-              marginBottom: "10px",
-              display: "flex",
-              gap: "10px",
-              alignItems: "center",
-            }}
-          >
-            <label>Tags</label>
-          </div>
-          <div
-            style={{
-              boxSizing: "border-box",
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap: "10px",
-            }}
-          >
-            {tagArray.map((tag, index) => (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <label style={{ marginBottom: "10px" }} htmlFor="title_en">Title</label>
               <input
-                key={index}
                 style={{ padding: "10px" }}
-                placeholder={`Tag ${index + 1}`}
-                name={`tag-${index}`}
+                id="title_en"
+                placeholder="Title"
+                type="text"
+                name="title_en"
+                required
               />
-            ))}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <label style={{ marginBottom: "auto" }}>სათაური</label>
+              <input
+                style={{ padding: "10px" }}
+                id="title_ge"
+                name="title_ge"
+                placeholder="სათაური"
+                type="text"
+                required
+              />
+            </div>
           </div>
-        </div>
-        <button
-        style={{
-          padding: "10px",
-          marginTop: "20px",
-          backgroundColor: "#0070f3",
-          color: "#fff",
-          border: "none",
-          borderRadius: "5px",
-        }}
-        type="submit">
-        Add Product to Stripe
-      </button>
-      </div>
 
-    </form>
+          {/* Description Inputs */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginTop: "20px" }}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <label style={{ marginBottom: "10px" }}>Description</label>
+              <textarea
+                style={{ height: "100px", padding: "10px" }}
+                id="description_en"
+                placeholder="Description"
+                name="description_en"
+              />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <label style={{ marginBottom: "auto" }}>აღწერა</label>
+              <textarea
+                style={{ height: "100px", padding: "10px" }}
+                id="description_ge"
+                placeholder="აღწერა"
+                name="description_ge"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Additional Inputs */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "20px", marginTop: "20px" }}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <label style={{ marginBottom: "10px" }}>Gender</label>
+              <select id="gender" style={{ padding: "10px" }} name="gender">
+                <option value="woman">ქალი</option>
+                <option value="man">კაცი</option>
+                <option value="girl">გოგო</option>
+                <option value="boy">ბიჭი</option>
+              </select>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <label style={{ marginBottom: "10px" }}>Category</label>
+              <select id="category" style={{ padding: "10px" }} name="category">
+                <option value="pants">შარვალი</option>
+                <option value="jeans">ჯინსი</option>
+                <option value="shorts">შორტები</option>
+                <option value="coat">ქურთუკი</option>
+              </select>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <label style={{ marginBottom: "10px" }}>Size</label>
+              <select id="size" style={{ padding: "10px" }} name="size">
+                <option value="xs">XS</option>
+                <option value="s">S</option>
+                <option value="m">M</option>
+                <option value="l">L</option>
+              </select>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <label style={{ marginBottom: "10px" }}>Price</label>
+              <input
+                id="price"
+                name="price"
+                style={{ padding: "10px" }}
+                placeholder="Price"
+                type="number"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Tags */}
+          <div style={{ display: "flex", flexDirection: "column", marginTop: "20px" }}>
+            <div style={{ marginBottom: "10px", display: "flex", gap: "10px", alignItems: "center" }}>
+              <label>Tags</label>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }}>
+              {tagArray.map((tag, index) => (
+                <input
+                  key={index}
+                  style={{ padding: "10px" }}
+                  placeholder={`Tag ${index + 1}`}
+                  name={`tag-${index}`}
+                />
+              ))}
+            </div>
+          </div>
+
+          <button
+            style={{
+              padding: "10px",
+              marginTop: "20px",
+              backgroundColor: "#0070f3",
+              color: "#fff",
+              border: "none",
+              borderRadius: "5px",
+            }}
+            type="submit"
+          >
+            Add Product to Stripe
+          </button>
+        </div>
+      </form>
+
+ {/* Display success or error message */}
+ {message && (
+        <div
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            transition: "all 0.5s linear",
+            padding: "20px",
+            backgroundColor: message.includes("successfully") ? "#d4edda" : "#f8d7da",
+            color: message.includes("successfully") ? "#155724" : "#721c24",
+            border: `1px solid ${message.includes("successfully") ? "#c3e6cb" : "#f5c6cb"}`,
+            borderRadius: "5px",
+            textAlign: "center",
+            zIndex: 1000,
+          }}
+        >
+          {message}
+        </div>
+      )}
+    </div>
   );
 }
