@@ -1,19 +1,14 @@
+"use client";
 import React from "react";
-import Stripe from "stripe";
-import {createClient} from "../../lib/supaBase/server";
 import "./style.css";
 
 let tagArray = ["", "", ""]; // Predefined empty tags for the UI
 
 export default function AddNewProduct() {
   async function submitProduct(formData: FormData) {
-    "use server";
-
     try {
-      // Initialize Stripe
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
-      const  supabase = await createClient();
       // Collect form data
+      debugger
       const title_en = formData.get("title_en") as string;
       const title_ge = formData.get("title_ge") as string;
       const description_en = formData.get("description_en") as string;
@@ -27,7 +22,7 @@ export default function AddNewProduct() {
       const tags: string[] = [];
       for (let i = 0; i < tagArray.length; i++) {
         const tag = formData.get(`tag-${i}`) as string;
-        if (tag?.trim()) tags.push(tag.trim()); // Add non-empty, trimmed tags
+        if (tag?.trim()) tags.push(tag.trim());
       }
 
       // Validate required fields
@@ -35,29 +30,7 @@ export default function AddNewProduct() {
         throw new Error("Please fill out all required fields.");
       }
 
-      // Create a product in Stripe
-      const product = await stripe.products.create({
-        name: title_en,
-        description: description_en,
-        metadata: {
-          title_ge,
-          description_ge,
-          gender,
-          category,
-          price,
-          size,
-          tags: tags.join(", "), // Save tags as a comma-separated string in metadata
-        },
-      });
-
-      // Create a price for the product
-      await stripe.prices.create({
-        product: product.id,
-        unit_amount: parseInt(price) * 100, // Convert price to cents
-        currency: "usd",
-      });
-
-      console.log("Product created successfully:", {
+      const productData = {
         title_en,
         title_ge,
         description_en,
@@ -67,35 +40,41 @@ export default function AddNewProduct() {
         price,
         size,
         tags,
-      });
-  const { data: productData, error: productError } = await supabase
-        .from("products")
-        .insert([
-          {
-            title_en,
-            title_ge,
-            description_en,
-            description_ge,
-            gender,
-            category,
-            price,
-            size,
-            tags,
-            stripe_product_id: product.id
-          }
-        ]).single();
+      };
 
+      // Send the product data to the API
+      const response = await fetch("/api/addProduct", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(productData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to add product: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log("Product added successfully:", result);
     } catch (error) {
       console.error("Error adding product:", error);
     }
   }
 
+  // Handle form submission
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // Prevent default form submission
+    const formData = new FormData(event.currentTarget); // Create FormData from the form
+    submitProduct(formData);
+    debugger // Call submitProduct with the FormData
+  };
+
   return (
-    <form action={submitProduct} className="addNewProduct-container">
+    <form onSubmit={handleSubmit} className="addNewProduct-container">
       <div className="addNewProduct-Info">
         {/* Title Inputs */}
-        <div
-          style={{ borderBottom: "2px solid #98cddf", marginBottom: "20px" }}>
+        <div style={{ borderBottom: "2px solid #98cddf", marginBottom: "20px" }}>
           <h3>ინფორმაცია</h3>
         </div>
         <div
@@ -247,19 +226,19 @@ export default function AddNewProduct() {
           </div>
         </div>
         <button
-        style={{
-          padding: "10px",
-          marginTop: "20px",
-          backgroundColor: "#0070f3",
-          color: "#fff",
-          border: "none",
-          borderRadius: "5px",
-        }}
-        type="submit">
-        Add Product to Stripe
-      </button>
+          style={{
+            padding: "10px",
+            marginTop: "20px",
+            backgroundColor: "#0070f3",
+            color: "#fff",
+            border: "none",
+            borderRadius: "5px",
+          }}
+          type="submit"
+        >
+          Add Product to Stripe
+        </button>
       </div>
-
     </form>
   );
 }
