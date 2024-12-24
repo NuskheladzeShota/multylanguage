@@ -64,12 +64,20 @@ export default function AddNewProduct() {
 
       // Set success message
       setMessage("Product added successfully!");
+      hideMessageAfterDelay();
     } catch (error) {
       console.error("Error adding product:", error);
       // Set error message
       setMessage("Error adding product. Please try again.");
+      hideMessageAfterDelay();
     }
   }
+
+  const hideMessageAfterDelay = () => {
+    setTimeout(() => {
+      setMessage(null);
+    }, 1000); // Hide message after 3 seconds
+  };
 
   // Handle form submission
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -208,16 +216,22 @@ export default function AddNewProduct() {
         </div>
       </form>
 
-      {/* Display success or error message */}
-      {message && (
+ {/* Display success or error message */}
+ {message && (
         <div
           style={{
-            marginTop: "20px",
-            padding: "10px",
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            transition: "all 0.5s linear",
+            padding: "20px",
             backgroundColor: message.includes("successfully") ? "#d4edda" : "#f8d7da",
             color: message.includes("successfully") ? "#155724" : "#721c24",
             border: `1px solid ${message.includes("successfully") ? "#c3e6cb" : "#f5c6cb"}`,
             borderRadius: "5px",
+            textAlign: "center",
+            zIndex: 1000,
           }}
         >
           {message}
