@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
       priceInCents: price.unit_amount,
     });
   } catch (error) {
-    console.error("Error fetching product details:", error);
+    // console.error("Error fetching product details:", error);
     return NextResponse.json(
       { error: "Unable to fetch product details" },
       { status: 500 }
