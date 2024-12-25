@@ -21,11 +21,11 @@ export default function ProductCard({
 
   return (
     <div key={product.id} className="item ">
-      {/* <img
+      <img
         src={product.image}
         alt={title || "პროდუქტის სურათი"}
         className="item-img"
-      /> */}
+      />
       <h4 className="item-name ">{title || "სათაური არ არის ხელმისაწვდომი"}</h4>
       <div>{product.price} ₾</div>
       <p className="item-desc">
