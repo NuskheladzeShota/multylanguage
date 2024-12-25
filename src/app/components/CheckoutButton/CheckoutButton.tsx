@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { createCheckoutSession } from "../../actions/stripe";
 
 interface ProductPurchaseProps {
-  productId: string; 
+  productId: string;
 }
 
 export default function ProductPurchase({ productId }: ProductPurchaseProps) {
@@ -14,27 +14,30 @@ export default function ProductPurchase({ productId }: ProductPurchaseProps) {
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
-        console.log("Fetching product details for productId:", productId); 
-  
-        const response = await fetch(`/api/get-product-details?productId=${productId}`);
-  
-        console.log("API Response Status:", response.status); 
-  
+        console.log("Fetching product details for productId:", productId);
+
+        const response = await fetch(
+          `/api/get-product-details?productId=${productId}`
+        );
+
+        console.log("API Response Status:", response.status);
+
         if (!response.ok) {
-          throw new Error(`Failed to fetch product details. Status: ${response.status}`);
+          throw new Error(
+            `Failed to fetch product details. Status: ${response.status}`
+          );
         }
-  
+
         const data = await response.json();
-        console.log("Product details received:", data); 
+        console.log("Product details received:", data);
         setProduct(data);
       } catch (error) {
-        console.error("Error fetching product details:", error); 
+        console.error("Error fetching product details:", error);
       }
     };
-  
+
     fetchProductDetails();
   }, [productId]);
-  
 
   const handlePurchase = async () => {
     setLoading(true);
@@ -43,11 +46,11 @@ export default function ProductPurchase({ productId }: ProductPurchaseProps) {
 
       const formData = new FormData();
       formData.set("uiMode", "hosted");
-      formData.set("customDonation", String(product.priceInCents)); 
+      formData.set("customDonation", String(product.priceInCents));
 
       const { url } = await createCheckoutSession(formData);
       if (url) {
-        window.location.href = url; 
+        window.location.href = url;
       } else {
         throw new Error("No URL returned from the server action.");
       }
@@ -59,19 +62,23 @@ export default function ProductPurchase({ productId }: ProductPurchaseProps) {
   };
 
   return (
-    <div className="p-6 border rounded-lg text-center">
+    // <div className="p-6 border rounded-lg text-center">
+    <div>
       {product ? (
         <>
           <button
             onClick={handlePurchase}
-            className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700"
+            className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition"
             disabled={loading}
           >
             {loading ? "Processing..." : "Buy Now"}
           </button>
         </>
       ) : (
-        <button  className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700"> Loading....</button>
+        <button className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition">
+          {" "}
+          Loading....
+        </button>
       )}
     </div>
   );

@@ -14,7 +14,7 @@ export const ProductList = ({
 }: ProductListProps): JSX.Element => {
   return (
     <div className="container margin-bottom-20px">
-      <div className="items margin-top-20px">
+      <div className="items margin-top-20px mx-20">
         {productList.map((product) => (
           <ProductCard key={product.id} product={product} locale={locale} />
         ))}
