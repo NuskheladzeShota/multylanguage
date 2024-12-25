@@ -46,7 +46,7 @@ export default function ProductPurchase({ productId }: ProductPurchaseProps) {
 
       const formData = new FormData();
       formData.set("uiMode", "hosted");
-      formData.set("customDonation", String(product.priceInCents));
+      formData.set("customDonation", String(product.priceInDollars));
 
       const { url } = await createCheckoutSession(formData);
       if (url) {

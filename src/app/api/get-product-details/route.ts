@@ -31,13 +31,7 @@ export async function GET(req: NextRequest) {
       id: product.id,
       name: product.name,
       description: product.description,
-      priceId: price.id,
-      priceFormatted:
-        (price.unit_amount / 100).toFixed(2) +
-        " " +
-        price.currency.toUpperCase(),
-      priceInCents: price.unit_amount,
-    });
+      priceInDollars: (price.unit_amount / 100).toFixed(2)  });
   } catch (error) {
     // console.error("Error fetching product details:", error);
     return NextResponse.json(
