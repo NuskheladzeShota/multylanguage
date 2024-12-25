@@ -6,6 +6,7 @@ export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
     const productId = url.searchParams.get("productId");
+
     if (!productId || typeof productId !== "string") {
       return NextResponse.json(
         { error: "Missing or invalid Product ID" },
@@ -14,10 +15,10 @@ export async function GET(req: NextRequest) {
     }
 
     const product = await stripe.products.retrieve(productId);
-
     const prices = await stripe.prices.list({
       product: productId,
     });
+
     if (prices.data.length === 0) {
       return NextResponse.json(
         { error: "Product does not have any prices assigned" },
@@ -31,9 +32,16 @@ export async function GET(req: NextRequest) {
       id: product.id,
       name: product.name,
       description: product.description,
-      priceInDollars: (price.unit_amount / 100).toFixed(2)  });
+      description_ge: product.metadata.description_ge, 
+      title_ge: product.metadata.title_ge, 
+      category: product.metadata.category,
+      tags: product.metadata.tags,
+      gender: product.metadata.gender,
+      size: product.metadata.size,
+      priceInCents: price.unit_amount,
+    });
   } catch (error) {
-    // console.error("Error fetching product details:", error);
+    console.error("Error fetching product details:", error);
     return NextResponse.json(
       { error: "Unable to fetch product details" },
       { status: 500 }

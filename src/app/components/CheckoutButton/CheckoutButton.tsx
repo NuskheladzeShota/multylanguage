@@ -43,11 +43,19 @@ export default function ProductPurchase({ productId }: ProductPurchaseProps) {
     setLoading(true);
     try {
       if (!product) throw new Error("Product details are not loaded yet.");
-
+  
       const formData = new FormData();
       formData.set("uiMode", "hosted");
-      formData.set("customDonation", String(product.priceInDollars));
-
+      formData.set("name", product.name); 
+      formData.set("description", product.description); 
+      formData.set("description_ge", product.description_ge); 
+      formData.set("title_ge", product.name); 
+      formData.set("category", product.category); 
+      formData.set("gender", product.gender); 
+      formData.set("size", product.size); 
+      formData.set("priceInCents", product.priceInCents);
+  
+  
       const { url } = await createCheckoutSession(formData);
       if (url) {
         window.location.href = url;
@@ -60,6 +68,8 @@ export default function ProductPurchase({ productId }: ProductPurchaseProps) {
       setLoading(false);
     }
   };
+  
+  
 
   return (
     // <div className="p-6 border rounded-lg text-center">
