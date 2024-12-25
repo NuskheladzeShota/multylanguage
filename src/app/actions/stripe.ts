@@ -15,6 +15,11 @@ export async function createCheckoutSession(
   ) as Stripe.Checkout.SessionCreateParams.UiMode;
 
   const origin: string = headers().get("origin") as string;
+
+  const locale = headers().get("accept-language")?.split(",")[0] || "ka";
+
+  console.log("Accept-Language Header:", locale); 
+
   const description = `
     Product Name: ${data.get("name") as string}
     Description (EN): ${data.get("description") as string}
@@ -45,11 +50,11 @@ export async function createCheckoutSession(
         },
       ],
       ...(ui_mode === "hosted" && {
-        success_url: `${origin}/donate-with-checkout/result?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${origin}/donate-with-checkout`,
+        success_url: `${origin}/${locale}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${origin}/${locale}/success`,
       }),
       ...(ui_mode === "embedded" && {
-        return_url: `${origin}/donate-with-embedded-checkout/result?session_id={CHECKOUT_SESSION_ID}`,
+        return_url: `${origin}/${locale}/success?session_id={CHECKOUT_SESSION_ID}`,
       }),
       ui_mode,
     });
