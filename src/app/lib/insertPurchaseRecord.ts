@@ -1,5 +1,5 @@
 import { createClient } from "./supaBase/server";
-import {stripe} from "./stripe"
+import { stripe } from "./stripe";
 const supabase = createClient();
 
 export async function insertPurchaseRecord(userId: string, checkoutId: string): Promise<void> {
@@ -8,32 +8,41 @@ export async function insertPurchaseRecord(userId: string, checkoutId: string): 
       expand: ['line_items'],
     });
 
-    let purchaseType = 'single';  
+    let purchaseType = 'single';
 
     if (session && session.line_items && session.line_items.data) {
       const isCartItem = session.line_items.data.some((item) => {
         const productName = item.description || "Unknown Product";
-        return productName.includes("Cart Items");  
+        return productName.includes("Cart Items");
       });
 
       if (isCartItem) {
-        purchaseType = 'cart';  
+        purchaseType = 'cart';
       }
 
       session.line_items.data.forEach((item) => {
-        const productName = item.description ||  "Unknown Product";
+        const productName = item.description || "Unknown Product";
         console.log(`Product name: ${productName}`);
       });
     } else {
       console.log('No line items found in the checkout session.');
     }
 
+    const productId = session.metadata?.product_id || null; 
+
+    const purchaseData = {
+      user_id: userId,
+      checkout_id: checkoutId,
+      purchase_type: purchaseType,
+      product_ids: productId ? [productId] : null,
+    };
+
     const { error } = await (await supabase)
       .from("purchaseList")
-      .insert([{ user_id: userId, checkout_id: checkoutId, purchase_type: purchaseType }]);
+      .insert([purchaseData]);
 
     if (error) {
-      if (error.code === '23505') {  
+      if (error.code === '23505') {
         console.log(`Duplicate checkout ID: ${checkoutId} for user ${userId}. Skipping insertion.`);
       } else {
         throw new Error(`Error creating purchase record: ${error.message}`);
