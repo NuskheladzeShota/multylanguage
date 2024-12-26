@@ -46,5 +46,8 @@ export const config = {
     "/products",
     "/products/:id*",
     "/profile",
+    "/product-list",
+    "/sign-in",
+    "/sign-up",
   ],
 };
