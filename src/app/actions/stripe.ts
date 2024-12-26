@@ -5,7 +5,6 @@ import { headers } from "next/headers";
 import { CURRENCY } from "../config/index";
 import { stripe } from "../lib/stripe";
 import { getUserIdFromSupabase } from "../lib/getUserIdFromSupabase";
-import { insertPurchaseRecord } from "../lib/insertPurchaseRecord";
 
 export async function createCheckoutSession(
   data: FormData
@@ -49,7 +48,7 @@ export async function createCheckoutSession(
       ],
       ...(ui_mode === "hosted" && {
         success_url: `${origin}/${locale}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${origin}/${locale}/success`,
+        cancel_url: `${origin}/${locale}/product-list`,
       }),
       ...(ui_mode === "embedded" && {
         return_url: `${origin}/${locale}/success?session_id={CHECKOUT_SESSION_ID}`,
@@ -63,7 +62,6 @@ export async function createCheckoutSession(
     throw new Error("Unauthorized: User ID not found.");
   }
 
-  await insertPurchaseRecord(userId, checkoutSession.id);
 
   return {
     client_secret: checkoutSession.client_secret,

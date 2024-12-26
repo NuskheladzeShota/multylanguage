@@ -1,5 +1,7 @@
-import type { Stripe } from "stripe";
 import { stripe } from "../../lib/stripe";
+import { getUserIdFromSupabase } from "../../lib/getUserIdFromSupabase";
+import { insertPurchaseRecord } from "../../lib/insertPurchaseRecord";
+import type { Stripe } from "stripe";
 
 export default async function SuccessPage({
   searchParams,
@@ -17,10 +19,14 @@ export default async function SuccessPage({
 
   const paymentIntent = checkoutSession.payment_intent as Stripe.PaymentIntent;
 
+  const userId = await getUserIdFromSupabase();
+
+  await insertPurchaseRecord(userId, checkoutSession.id);
+
   return (
     <div className="container mx-auto px-4 py-6 dark:bg-gray-900 dark:text-white">
       <h2 className="text-3xl font-semibold text-center text-green-600 dark:text-green-400 mb-6">
-        Thank you for your purchase! Your payment was successful
+        Thank you for your purchase! Your payment was successful.
       </h2>
 
       <div className="bg-white shadow-lg rounded-lg p-6 max-w-3xl mx-auto mt-6 dark:bg-gray-800 dark:border dark:border-gray-700">
