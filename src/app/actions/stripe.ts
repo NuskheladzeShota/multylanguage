@@ -24,9 +24,6 @@ export async function createCheckoutSession(
     Description (EN): ${data.get("description") as string}
     Description (GE): ${data.get("description_ge") as string}
     Title (GE): ${data.get("title_ge") as string}
-    Category: ${data.get("category") as string}
-    Gender: ${data.get("gender") as string}
-    Size: ${data.get("size") as string}
   `;
 
   const checkoutSession: Stripe.Checkout.Session =
