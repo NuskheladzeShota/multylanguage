@@ -165,7 +165,7 @@ const Header = (dict) => {
             type="Theme"
           ></DropDown>
         </div>
-        {/* <div className="">
+        <div className="">
           {isLoading ? (
             <AuthenticationButton
               type="Loading"
@@ -184,7 +184,7 @@ const Header = (dict) => {
               buttonText={dict.dict.Login}
             ></AuthenticationButton>
           )}
-        </div> */}
+        </div>
       </div>
     </header>
   );

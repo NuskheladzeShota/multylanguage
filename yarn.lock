@@ -1450,7 +1450,6 @@
     tslib "2"
 
 "@formatjs/fast-memoize@2.2.3":
-"@formatjs/fast-memoize@2.2.3":
   version "2.2.3"
   resolved "https://registry.npmjs.org/@formatjs/fast-memoize/-/fast-memoize-2.2.3.tgz"
   integrity sha512-3jeJ+HyOfu8osl3GNSL4vVHUuWFXR03Iz9jjgI7RwjG6ysu/Ymdr0JRCPHfF5yGbTE6JCrd63EpvX1/WybYRbA==
@@ -1492,7 +1491,6 @@
     "@formatjs/intl-localematcher" "0.5.7"
     tslib "2"
 
-"@formatjs/intl-localematcher@0.5.7":
 "@formatjs/intl-localematcher@0.5.7":
   version "0.5.7"
   resolved "https://registry.npmjs.org/@formatjs/intl-localematcher/-/intl-localematcher-0.5.7.tgz"
@@ -6025,7 +6023,6 @@ internal-slot@^1.0.4, internal-slot@^1.0.7:
     side-channel "^1.0.4"
 
 intl-messageformat@10.7.6:
-intl-messageformat@10.7.6:
   version "10.7.6"
   resolved "https://registry.npmjs.org/intl-messageformat/-/intl-messageformat-10.7.6.tgz"
   integrity sha512-IsMU/hqyy3FJwNJ0hxDfY2heJ7MteSuFvcnCebxRp67di4Fhx1gKKE+qS0bBwUF8yXkX9SsPUhLeX/B6h5SKUA==
@@ -7507,7 +7504,6 @@ next-themes@^0.3.0:
   integrity sha512-/QHIrsYpd6Kfk7xakK4svpDI5mmXP0gfvCoJdGpZQ2TOrQZmsW0QxjaiLn8wbIKjtm4BTSqLoix4lxYYOnLJ/w==
 
 next@^14.2.21, next@>=10:
-next@^14.2.21, next@>=10:
   version "14.2.21"
   resolved "https://registry.npmjs.org/next/-/next-14.2.21.tgz"
   integrity sha512-rZmLwucLHr3/zfDMYbJXbw0ZeoBpirxkXuvsJbk7UPorvPYZhP7vq7aHbKnU7dQNCYIimRrbB2pp3xmf+wsYUg==
@@ -8876,7 +8872,7 @@ react-transition-group@^4.4.5:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-"react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.6.0 || 17 || 18", "react@^16.8 || ^17 || ^18", "react@^17.0.0 || ^18.0.0 || ^19.0.0", react@^18.0.0, react@^18.2.0, react@^18.3.1, "react@>= 16", "react@>= 16.8.0", "react@>= 16.8.0 || 17.x.x || ^18.0.0-0", react@>=16, react@>=16.6.0, react@>=16.8, react@>=16.8.0, "react@>=16.8.0 <20.0.0", react@>=17:
+"react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.6.0 || 17 || 18", "react@^16.8 || ^17 || ^18", "react@^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc", "react@^17.0.0 || ^18.0.0 || ^19.0.0", react@^18.0.0, react@^18.2.0, react@^18.3.1, "react@>= 16", "react@>= 16.8.0", "react@>= 16.8.0 || 17.x.x || ^18.0.0-0", react@>=16, react@>=16.6.0, react@>=16.8, react@>=16.8.0, "react@>=16.8.0 <20.0.0", react@>=17:
   version "18.3.1"
   resolved "https://registry.npmjs.org/react/-/react-18.3.1.tgz"
   integrity sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==
