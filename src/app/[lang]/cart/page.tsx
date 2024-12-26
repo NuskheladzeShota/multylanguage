@@ -1,6 +1,5 @@
 import { createClient } from "../../lib/supaBase/server";
 import { getUserIdFromSupabase } from "../../lib/getUserIdFromSupabase";
-
 interface Product {
   id: number;
   title_en: string;
@@ -25,7 +24,7 @@ const CartPage = async ({ params }: { params: { lang: string } }) => {
     .single();
 
   if (cartError || !cartData) {
-    return <div>Your cart is empty or there was an error fetching the data.</div>;
+    return <div>Your cart is empty.</div>;
   }
 
   const productList = cartData.product_list;
