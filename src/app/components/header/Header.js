@@ -111,8 +111,8 @@ const Header = (dict) => {
         </Link>
         <nav className="rounded-3xl flex- flex-row  border border-solid dark:border-header-hover-dark h-20 items-center p-2  hidden sm:block">
           <ul className="gap-5 flex  list-none flex-row">
-            <li className={listItemStyle}>{dict.dict.Equipment}</li>
-            <li className={listItemStyle}>{dict.dict.Trainers}</li>
+            {/* <li className={listItemStyle}>{dict.dict.Equipment}</li>
+            <li className={listItemStyle}>{dict.dict.Trainers}</li> */}
             {/* <li className={listItemStyle}>{dict.dict.Certificates}</li>
             <li className={listItemStyle}>{dict.dict.Schedules}</li> */}
             <li className={`${listItemStyle} hidden l:block`}>
@@ -124,11 +124,11 @@ const Header = (dict) => {
               </li>
             </Link>
 
-            <Link href={`/${locale}/blog`}>
+            {/* <Link href={`/${locale}/blog`}>
               <li className={`${listItemStyle} hidden xl:block`}>
                 {dict.dict.Blog}
               </li>
-            </Link>
+            </Link> */}
             {/* <Link href={`/${locale}/products`}>
               <li className={`${listItemStyle} hidden xl:block`}>
                 {dict.dict.Products}
@@ -139,12 +139,12 @@ const Header = (dict) => {
                 {dict.dict.Products}
               </li>
             </Link>
-            <Link href={`/${locale}/posts`}>
+            {/* <Link href={`/${locale}/posts`}>
               <li className={`${listItemStyle} hidden xl:block`}>
                 {dict.dict.Posts}
               </li>
-            </Link>
-            <Link href={`/${locale}/addNewProduct`}>
+            </Link> */}
+            <Link href={`/${locale}/AddNewProduct`}>
               <li className={`${listItemStyle} hidden xl:block`}>
                 New_Product
               </li>
