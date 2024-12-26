@@ -6,13 +6,31 @@ import { signOutAction } from "../../actions/actions";
 import { Button } from "./ui/button";
 import { createClient } from "../../../utils/supabase/client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function AuthButton() {
-  // const supabase = await createClient();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const supabase = createClient();
 
-  // const {
-  //   data: { user },
-  // } = await supabase.auth.getUser();
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        setUser(user);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  console.log("My user: ", user);
 
   /*if (!hasEnvVars) {
     return (
@@ -50,17 +68,16 @@ export default function AuthButton() {
       </>
     );
   }*/
-  return (
-    // user ?   (
-    //   <div className="flex items-center gap-4">
-    //     Hey, {user.email}!
-    //     <form action={signOutAction}>
-    //       <Button type="submit" variant={"outline"}>
-    //         Sign out
-    //       </Button>
-    //     </form>
-    //   </div>
-    // ) : (
+  return user ? (
+    <div className="flex items-center gap-4">
+      Hey, {user.email}!
+      <form action={signOutAction}>
+        <Button type="submit" variant={"outline"}>
+          Sign out
+        </Button>
+      </form>
+    </div>
+  ) : (
     <div className="flex gap-2">
       <Button asChild size="sm" variant={"outline"}>
         <Link href="/sign-in">Sign in</Link>
