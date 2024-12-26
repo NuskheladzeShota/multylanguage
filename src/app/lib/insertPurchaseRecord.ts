@@ -9,10 +9,14 @@ export async function insertPurchaseRecord(userId: string, checkoutId: string): 
       .insert([{ user_id: userId, checkout_id: checkoutId }]);
 
     if (error) {
-      throw new Error(`Error creating purchase record: ${error.message}`);
+      if (error.code === '23505') {  
+        console.log(`Duplicate checkout ID: ${checkoutId} for user ${userId}. Skipping insertion.`);
+      } else {
+        throw new Error(`Error creating purchase record: ${error.message}`);
+      }
+    } else {
+      console.log(`Purchase record created for user ${userId} with checkout ID ${checkoutId}`);
     }
-
-    console.log(`Purchase record created for user ${userId} with checkout ID ${checkoutId}`);
   } catch (error) {
     console.error("Error inserting purchase record:", error);
     throw error;
