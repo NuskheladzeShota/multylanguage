@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
       size,
       tags,
       stripe_product_id: product.id,
-      UploadImage: publicUrl.publicUrl
+      image: publicUrl.publicUrl
     });
 
     if (productError) {
