@@ -1,11 +1,34 @@
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 import "./style.css";
 
 let tagArray = ["", "", ""]; // Predefined empty tags for the UI
-
+type ImageState = {
+  url: string;
+  file: File | null;
+};
 export default function AddNewProduct() {
-  const [message, setMessage] = useState<string | null>(null); // State for the success or error message
+  const [message, setMessage] = useState<string | null>(null);
+  const[imageUrl, setImageUrl] = useState<ImageState | null>({
+    url: "",
+    file:null,
+  })
+
+  function handleImageUpload(file:File) {
+    let url = URL.createObjectURL(file);;
+    setImageUrl({
+      url: url,
+      file:file
+    });
+  }
+
+  function deleteImage() {
+    setImageUrl({
+      url: "",
+      file: null
+    })
+  }
 
   async function submitProduct(formData: FormData, formElement: HTMLFormElement) {
     try {
@@ -18,7 +41,7 @@ export default function AddNewProduct() {
       const category = formData.get("category") as string;
       const price = formData.get("price") as string;
       const size = formData.get("size") as string;
-
+      debugger
       // Collect and filter tags
       const tags: string[] = [];
       for (let i = 0; i < tagArray.length; i++) {
@@ -31,6 +54,7 @@ export default function AddNewProduct() {
         throw new Error("Please fill out all required fields.");
       }
 
+      
       const productData = {
         title_en,
         title_ge,
@@ -41,6 +65,8 @@ export default function AddNewProduct() {
         price,
         size,
         tags,
+        name:imageUrl?.file?.name as string,
+        image: await fileToBase64(),
       };
 
       // Send the product data to the API
@@ -61,7 +87,7 @@ export default function AddNewProduct() {
 
       // Clear the form inputs
       formElement.reset();
-
+      deleteImage();
       // Set success message
       setMessage("Product added successfully!");
       hideMessageAfterDelay();
@@ -72,7 +98,24 @@ export default function AddNewProduct() {
       hideMessageAfterDelay();
     }
   }
+  function fileToBase64() {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
 
+        // Event triggered when the file is successfully read
+        reader.onload = () => {
+            resolve(reader.result); // The Base64 string is in reader.result
+        };
+
+        // Event triggered on an error
+        reader.onerror = (error) => {
+            reject(error);
+        };
+        debugger
+        // Read the file as a Data URL (Base64 string)
+        reader.readAsDataURL(imageUrl.file);
+    });
+}
   const hideMessageAfterDelay = () => {
     setTimeout(() => {
       setMessage(null);
@@ -83,6 +126,8 @@ export default function AddNewProduct() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent default form submission
     const formData = new FormData(event.currentTarget); // Create FormData from the form
+    debugger
+    // Check if there is an image file in the state
     submitProduct(formData, event.currentTarget); // Pass form element to clear inputs
   };
 
@@ -199,7 +244,105 @@ export default function AddNewProduct() {
               ))}
             </div>
           </div>
-
+        {/*Upload Image*/}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "5px",
+              alignItems: "center",
+              border: "1px dashed #98cddf",
+              borderRadius: "5px",
+              marginTop: "20px",
+            }}>
+              {
+                imageUrl.url !== "" && (
+                  <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    padding: "10px",
+                    borderRadius: "5px",
+                    position: "relative",
+                  }}
+                  key={"image"}>
+                  <Image
+                    style={{
+                      borderRadius: "5px",
+                      border: "1px solid #98cddf",
+                    }}
+                    width={120}
+                    height={120}
+                    alt=""
+                    src={imageUrl.url}/>
+                  <svg
+                    style={{
+                      cursor: "pointer",
+                      width: "20px",
+                      height: "20px",
+                    }}
+                    onClick={() => {
+                      deleteImage();
+                    }}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="red"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+                  </svg>
+                </div>
+                )
+              }
+            {
+              imageUrl.url.length === 0 &&(
+                <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  height: "100%",
+                }}
+              >
+                <svg
+                  onClick={() => {
+                    document
+                      .getElementById(`ImgInput`)
+                      .click();
+                  }}
+                  style={{
+                    cursor: "pointer",
+                    height: "100px",
+                    width: "100px",
+                  }}
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15m0-3-3-3m0 0-3 3m3-3V15"/>
+                </svg>
+                <p>Upload Image</p>
+                <input
+                  onChange={(e) => {
+                    handleImageUpload(e.target.files[0]);
+                  }}
+                  id={`ImgInput`}
+                  style={{ display: "none" }}
+                  type="file"
+                  accept="image/*"
+                  name="image"
+                  required
+                ></input>
+              </div>
+              )
+            }
+          </div>
           <button
             style={{
               padding: "10px",
@@ -240,3 +383,4 @@ export default function AddNewProduct() {
     </div>
   );
 }
+

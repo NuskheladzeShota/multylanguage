@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from 'next/server'
 import Stripe from "stripe";
 import { createClient } from "../../lib/supaBase/server"; // Adjust the path if necessary
+import { decode } from 'base64-arraybuffer'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -24,7 +25,9 @@ export async function POST(request: NextRequest) {
       category,
       price,
       size,
-      tags
+      tags,
+      image,
+      name
     } = body;
 
     // Validate required fields
@@ -57,6 +60,19 @@ export async function POST(request: NextRequest) {
       currency: "usd",
     });
 
+   const base64String = image.replace(/^data:image\/\w+;base64,/, '');
+
+    /// Store Images
+    const UploadImage = await supabase
+      .storage
+      .from('product_images')
+      .upload(`public/${product.id}`, decode(base64String), {
+        contentType: 'image/png'
+      })
+      const { data: publicUrl } = supabase.storage
+      .from('product_images') // Replace with your bucket name
+      .getPublicUrl(UploadImage.data?.path as string)
+
     // Add product to Supabase
     const { error: productError } = await supabase.from("products").insert({
       title_en,
@@ -69,6 +85,7 @@ export async function POST(request: NextRequest) {
       size,
       tags,
       stripe_product_id: product.id,
+      image: publicUrl.publicUrl
     });
 
     if (productError) {
