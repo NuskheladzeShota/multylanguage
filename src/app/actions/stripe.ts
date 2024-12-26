@@ -1,11 +1,10 @@
 "use server";
 
 import type { Stripe } from "stripe";
-
 import { headers } from "next/headers";
-
 import { CURRENCY } from "../config/index";
 import { stripe } from "../lib/stripe";
+import { getUserIdFromSupabase } from "../lib/getUserIdFromSupabase";
 
 export async function createCheckoutSession(
   data: FormData
@@ -18,7 +17,7 @@ export async function createCheckoutSession(
 
   const locale = headers().get("accept-language")?.split(",")[0] || "ka";
 
-  console.log("Accept-Language Header:", locale); 
+  console.log("Accept-Language Header:", locale);
 
   const description = `
     Product Name: ${data.get("name") as string}
@@ -41,23 +40,28 @@ export async function createCheckoutSession(
             currency: CURRENCY,
             product_data: {
               name: data.get("name") as string,
-              description: description
-
+              description: description,
             },
-            unit_amount: 
-              Number(data.get("priceInCents") as string)
+            unit_amount: Number(data.get("priceInCents") as string),
           },
         },
       ],
       ...(ui_mode === "hosted" && {
         success_url: `${origin}/${locale}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${origin}/${locale}/success`,
+        cancel_url: `${origin}/${locale}/product-list`,
       }),
       ...(ui_mode === "embedded" && {
         return_url: `${origin}/${locale}/success?session_id={CHECKOUT_SESSION_ID}`,
       }),
       ui_mode,
     });
+
+  const userId = await getUserIdFromSupabase();
+
+  if (!userId) {
+    throw new Error("Unauthorized: User ID not found.");
+  }
+
 
   return {
     client_secret: checkoutSession.client_secret,
