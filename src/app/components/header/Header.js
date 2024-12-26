@@ -11,6 +11,7 @@ import AuthenticationButton from "../logoutButton/LoggoutButton";
 import { useLocale } from "../providers/LanguageContext";
 
 import LocaleChange from "../LanguageChange/LanguageChange";
+import HeaderAuth from "./header-auth";
 
 const Header = (dict) => {
   const { user, error, isLoading } = useUser();
@@ -112,8 +113,8 @@ const Header = (dict) => {
           <ul className="gap-5 flex  list-none flex-row">
             <li className={listItemStyle}>{dict.dict.Equipment}</li>
             <li className={listItemStyle}>{dict.dict.Trainers}</li>
-            <li className={listItemStyle}>{dict.dict.Certificates}</li>
-            <li className={listItemStyle}>{dict.dict.Schedules}</li>
+            {/* <li className={listItemStyle}>{dict.dict.Certificates}</li>
+            <li className={listItemStyle}>{dict.dict.Schedules}</li> */}
             <li className={`${listItemStyle} hidden l:block`}>
               {dict.dict.Locations}
             </li>
@@ -148,6 +149,9 @@ const Header = (dict) => {
                 New_Product
               </li>
             </Link>
+            <li className=" p-5 text-center cursor-pointer">
+              <HeaderAuth />
+            </li>
           </ul>
         </nav>
       </div>
@@ -161,7 +165,7 @@ const Header = (dict) => {
             type="Theme"
           ></DropDown>
         </div>
-        <div className="">
+        {/* <div className="">
           {isLoading ? (
             <AuthenticationButton
               type="Loading"
@@ -180,7 +184,7 @@ const Header = (dict) => {
               buttonText={dict.dict.Login}
             ></AuthenticationButton>
           )}
-        </div>
+        </div> */}
       </div>
     </header>
   );
