@@ -54,7 +54,7 @@ export default function ProductPurchase({ productId }: ProductPurchaseProps) {
       formData.set("gender", product.gender); 
       formData.set("size", product.size); 
       formData.set("priceInCents", product.priceInCents);
-  
+      formData.set("id", product.id);  
   
       const { url } = await createCheckoutSession(formData);
       if (url) {
@@ -68,11 +68,8 @@ export default function ProductPurchase({ productId }: ProductPurchaseProps) {
       setLoading(false);
     }
   };
-  
-  
 
   return (
-    // <div className="p-6 border rounded-lg text-center">
     <div>
       {product ? (
         <>

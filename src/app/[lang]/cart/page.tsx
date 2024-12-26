@@ -1,57 +1,110 @@
-import { createClient } from "../../lib/supaBase/server";
-import { getUserIdFromSupabase } from "../../lib/getUserIdFromSupabase";
+"use client";
+
+import { useEffect, useState } from "react";
+import { createClient } from "../../../utils/supabase/client";
+import { SupabaseClient } from "@supabase/supabase-js";
+import ProductPurchaseCart from "../../components/ProductPurchaseCart/ProductPurchaseCart";
+
 interface Product {
   id: number;
   title_en: string;
+  title_ge: string;
   description_en: string;
+  description_ge: string;
   price: number;
   image: string;
+  quantity: number;
 }
 
-const CartPage = async ({ params }: { params: { lang: string } }) => {
-  const userId = await getUserIdFromSupabase();
+const CartPage = () => {
+  const [groupedProducts, setGroupedProducts] = useState<Product[]>([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!userId) {
-    return <div>Please log in to view your cart.</div>;
-  }
+  const client: SupabaseClient = createClient();
 
-  const client = createClient();
+  const getUserIdFromSupabase = async (): Promise<string | null> => {
+    try {
+      const { data: { user }, error } = await client.auth.getUser();
 
-  const { data: cartData, error: cartError } = await (await client)
-    .from("cart")
-    .select("product_list")
-    .eq("user_id", userId)
-    .single();
+      if (error || !user) {
+        console.error("Error fetching user from Supabase:", error);
+        return null;
+      }
 
-  if (cartError || !cartData) {
-    return <div>Your cart is empty.</div>;
-  }
+      return user.id;
+    } catch (unexpectedError) {
+      console.error("Unexpected error fetching user ID from Supabase:", unexpectedError);
+      return null;
+    }
+  };
 
-  const productList = cartData.product_list;
+  useEffect(() => {
+    const fetchCartData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-  const uniqueProductIds = Array.from(new Set(productList)); 
+        const userId = await getUserIdFromSupabase();
 
-  const { data: productData, error: productError } = await (await client)
-    .from("products")
-    .select("id, title_en, description_en, price, image")
-    .in("id", uniqueProductIds); 
+        if (!userId) {
+          setError("User is not authenticated.");
+          return;
+        }
 
-  if (productError || !productData) {
-    return <div>Error fetching product data.</div>;
-  }
+        const { data: cartData, error: cartError } = await client
+          .from("cart")
+          .select("product_list")
+          .eq("user_id", userId)
+          .single();
 
-  const productMap = productData.reduce((acc: { [key: number]: any }, product) => {
-    const quantity = productList.filter((id) => id === product.id).length;
-    acc[product.id] = { ...product, quantity };
-    return acc;
-  }, {});
+        if (cartError || !cartData) {
+          setError("Your cart is empty or there was an error.");
+          return;
+        }
 
-  const groupedProducts = Object.values(productMap);
+        const productList = cartData.product_list;
 
-  const totalPrice = groupedProducts.reduce(
-    (total, product) => total + product.price * product.quantity,
-    0
-  );
+        const uniqueProductIds = Array.from(new Set(productList));
+
+        const { data: productData, error: productError } = await client
+          .from("products")
+          .select("id, title_en, title_ge, description_en, description_ge, price, image")
+          .in("id", uniqueProductIds);
+
+        if (productError || !productData) {
+          setError("Error fetching product data.");
+          return;
+        }
+
+        const productMap = productData.reduce((acc: { [key: number]: any }, product) => {
+          const quantity = productList.filter((id: number) => id === product.id).length;
+          acc[product.id] = { ...product, quantity };
+          return acc;
+        }, {});
+
+        const groupedProducts = Object.values(productMap);
+        const totalPrice = groupedProducts.reduce(
+          (total, product) => total + product.price * product.quantity,
+          0
+        );
+
+        setGroupedProducts(groupedProducts as Product[]);
+        setTotalPrice(totalPrice);
+      } catch (error) {
+        setError("An unexpected error occurred.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCartData();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+
 
   return (
     <div className="cart-page p-6">
@@ -86,6 +139,10 @@ const CartPage = async ({ params }: { params: { lang: string } }) => {
 
       <div className="mt-8 text-lg font-semibold text-center">
         <h3>Total: {totalPrice} ₾</h3>
+
+        <ProductPurchaseCart
+          totalAmount={totalPrice * 100}  
+        />
       </div>
     </div>
   );
