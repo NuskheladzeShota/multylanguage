@@ -4,50 +4,8 @@ import type { Stripe } from "stripe";
 import { headers } from "next/headers";
 import { CURRENCY } from "../config/index";
 import { stripe } from "../lib/stripe";
-import { createClient } from "../lib/supaBase/server"; 
-const supabase = createClient();
-
-async function getUserIdFromSupabase(): Promise<string | null> {
-  try {
-    const { data: { user }, error } = await (await supabase).auth.getUser();
-
-    if (error) {
-      console.error("Error fetching user from Supabase auth:", error);
-      return null;
-    }
-
-    if (!user) {
-      console.warn("No user logged in. Supabase auth returned null.");
-      return null;
-    }
-
-    console.log("Fetched User Data from Supabase Auth:", user);
-    console.log("User ID (UID):", user.id);
-    console.log("User Email:", user.email);
-
-    return user.id; 
-  } catch (unexpectedError) {
-    console.error("Unexpected error fetching user ID from Supabase:", unexpectedError);
-    return null;
-  }
-}
-
-async function insertPurchaseRecord(userId: string, checkoutId: string): Promise<void> {
-  try {
-    const { error } = await (await supabase)
-      .from("purchaseList")
-      .insert([{ user_id: userId, checkout_id: checkoutId }]);
-
-    if (error) {
-      throw new Error(`Error creating purchase record: ${error.message}`);
-    }
-
-    console.log(`Purchase record created for user ${userId} with checkout ID ${checkoutId}`);
-  } catch (error) {
-    console.error("Error inserting purchase record:", error);
-    throw error;
-  }
-}
+import { getUserIdFromSupabase } from "../lib/getUserIdFromSupabase";
+import { insertPurchaseRecord } from "../lib/insertPurchaseRecord";
 
 export async function createCheckoutSession(
   data: FormData
