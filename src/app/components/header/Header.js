@@ -118,11 +118,21 @@ const Header = (dict) => {
             <li className={`${listItemStyle} hidden l:block`}>
               {dict.dict.Locations}
             </li>
-            <Link href={`/${locale}/profile`}>
+            {/* <Link href={`/${locale}/profile`}>
               <li className={`${listItemStyle} hidden xl:block`}>
                 {dict.dict.Profile}
               </li>
-            </Link>
+            </Link> */}
+
+            {user ? (
+              <Link href={`/${locale}/profile`}>
+                <li className={`${listItemStyle} hidden xl:block`}>
+                  {dict.dict.Profile}
+                </li>
+              </Link>
+            ) : (
+              <div></div>
+            )}
 
             {/* <Link href={`/${locale}/blog`}>
               <li className={`${listItemStyle} hidden xl:block`}>
@@ -145,10 +155,15 @@ const Header = (dict) => {
               </li>
             </Link> */}
             <Link href={`/${locale}/addNewProduct`}>
-              <li className={`${listItemStyle} hidden xl:block`}>
-                New_Product
-              </li>
+              <li className={`${listItemStyle} hidden xl:block`}>Add New</li>
             </Link>
+            {user ? (
+              <Link href={`/${locale}/cart`}>
+                <li className={`${listItemStyle} hidden xl:block`}>Cart</li>
+              </Link>
+            ) : (
+              <div></div>
+            )}
             <li className=" p-5 text-center cursor-pointer"></li>
           </ul>
         </nav>

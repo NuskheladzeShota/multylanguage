@@ -32,8 +32,8 @@ export async function GET(req: NextRequest) {
       id: product.id,
       name: product.name,
       description: product.description,
-      description_ge: product.metadata.description_ge, 
-      title_ge: product.metadata.title_ge, 
+      description_ge: product.metadata.description_ge,
+      title_ge: product.metadata.title_ge,
       category: product.metadata.category,
       tags: product.metadata.tags,
       gender: product.metadata.gender,
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
       priceInCents: price.unit_amount,
     });
   } catch (error) {
-    console.error("Error fetching product details:", error);
+    // console.error("Error fetching product details:", error);
     return NextResponse.json(
       { error: "Unable to fetch product details" },
       { status: 500 }

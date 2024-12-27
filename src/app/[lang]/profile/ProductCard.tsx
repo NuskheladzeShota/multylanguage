@@ -28,7 +28,7 @@ export default function ProductCard({
           {title || "სათაური არ არის ხელმისაწვდომი"}
         </h4>
         <div className="text-green-500 font-bold text-lg mt-2">
-          {product.price} ₾
+          {product.price} $
         </div>
         <p className="text-gray-600 text-sm mt-2">
           {description || "აღწერა არ არის ხელმისაწვდომი"}

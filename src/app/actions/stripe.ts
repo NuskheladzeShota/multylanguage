@@ -17,7 +17,7 @@ export async function createCheckoutSession(
 
   const locale = headers().get("accept-language")?.split(",")[0] || "ka";
 
-  console.log("Accept-Language Header:", locale);
+  // console.log("Accept-Language Header:", locale);
 
   const description = `
     Product Name: ${data.get("name") as string}
@@ -26,7 +26,7 @@ export async function createCheckoutSession(
     Title (GE): ${data.get("title_ge") as string}
   `;
 
-  const productId = data.get("id") as string; 
+  const productId = data.get("id") as string;
 
   const checkoutSession: Stripe.Checkout.Session =
     await stripe.checkout.sessions.create({
@@ -46,7 +46,7 @@ export async function createCheckoutSession(
         },
       ],
       metadata: {
-        product_id: productId,  
+        product_id: productId,
       },
       ...(ui_mode === "hosted" && {
         success_url: `${origin}/${locale}/success?session_id={CHECKOUT_SESSION_ID}`,
@@ -73,7 +73,7 @@ export async function createCheckoutSession(
 export async function createPaymentIntent(
   data: FormData
 ): Promise<{ client_secret: string }> {
-  const productId = data.get("id") as string;  
+  const productId = data.get("id") as string;
 
   const paymentIntent: Stripe.PaymentIntent =
     await stripe.paymentIntents.create({
@@ -81,7 +81,7 @@ export async function createPaymentIntent(
       automatic_payment_methods: { enabled: true },
       currency: CURRENCY,
       metadata: {
-        product_id: productId,  
+        product_id: productId,
       },
     });
 

@@ -20,7 +20,6 @@ export async function fetchProducts(): Promise<Product[]> {
     const response = await fetch(productsURL);
     return response.json();
   } catch (error) {
-    console.error("Error fetching products:", error);
     return [];
   }
 }
