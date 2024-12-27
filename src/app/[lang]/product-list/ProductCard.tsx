@@ -66,7 +66,7 @@ export default async function ProductCard({
 //         className="item-img"
 //       />
 //       <h4 className="item-name ">{title || "სათაური არ არის ხელმისაწვდომი"}</h4>
-//       <div>{product.price} ₾</div>
+//       <div>{product.price} $</div>
 //       <p className="item-desc">
 //         {description || "აღწერა არ არის ხელმისაწვდომი"}
 //       </p>

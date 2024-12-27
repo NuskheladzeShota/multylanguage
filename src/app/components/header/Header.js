@@ -157,6 +157,13 @@ const Header = (dict) => {
             <Link href={`/${locale}/addNewProduct`}>
               <li className={`${listItemStyle} hidden xl:block`}>Add New</li>
             </Link>
+            {user ? (
+              <Link href={`/${locale}/cart`}>
+                <li className={`${listItemStyle} hidden xl:block`}>Cart</li>
+              </Link>
+            ) : (
+              <div></div>
+            )}
             <li className=" p-5 text-center cursor-pointer"></li>
           </ul>
         </nav>

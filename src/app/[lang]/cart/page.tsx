@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "../../../utils/supabase/client";
 import { SupabaseClient } from "@supabase/supabase-js";
 import ProductPurchaseCart from "../../components/ProductPurchaseCart/ProductPurchaseCart";
+import { redirect } from "next/navigation";
 
 interface Product {
   id: number;
@@ -33,6 +34,7 @@ const CartPage = () => {
 
       if (error || !user) {
         // console.error("Error fetching user from Supabase:", error);
+        redirect("/");
         return null;
       }
 
@@ -143,10 +145,10 @@ const CartPage = () => {
                 {product.description_en}
               </p>
               <p className="text-lg font-bold text-green-600 mt-4">
-                {product.price} ₾ x {product.quantity}
+                {product.price} $ x {product.quantity}
               </p>
               <p className="text-lg font-semibold text-gray-800 mt-2">
-                Subtotal: {product.price * product.quantity} ₾
+                Subtotal: {product.price * product.quantity} $
               </p>
             </div>
           ))
@@ -154,7 +156,7 @@ const CartPage = () => {
       </div>
 
       <div className="mt-8 text-lg font-semibold text-center">
-        <h3>Total: {totalPrice} ₾</h3>
+        <h3>Total: {totalPrice} $</h3>
 
         <ProductPurchaseCart totalAmount={totalPrice * 100} />
       </div>
