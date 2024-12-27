@@ -2,7 +2,9 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import "./style.css";
-import { supabase } from  '../../lib/supaBase/supabaseClient';
+import { createClient } from "../../../utils/supabase/client";
+import { signOutAction } from "../../actions/actions";
+
 
 
 let tagArray = ["", "", ""]; // Predefined empty tags for the UI
@@ -17,7 +19,7 @@ export default function AddNewProduct() {
     url: "",
     file:null,
   })
-
+  const supabase = createClient();
    useEffect(() => {
      const fetchUser = async () => {
        try {
@@ -49,8 +51,9 @@ export default function AddNewProduct() {
     try {
       // Collect form data
 
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user || null);
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       debugger
       if(user) {
         const title_en = formData.get("title_en") as string;
