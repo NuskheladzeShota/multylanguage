@@ -18,7 +18,7 @@ export default async function ProductCard({
   const title = locale === "ka" ? product.title_ge : product.title_en;
   const description =
     locale === "ka" ? product.description_ge : product.description_en;
-const userId = await getUserIdFromSupabase();
+  const userId = await getUserIdFromSupabase();
   return (
     <div
       key={product.id}
@@ -34,7 +34,7 @@ const userId = await getUserIdFromSupabase();
           {title || "სათაური არ არის ხელმისაწვდომი"}
         </h4>
         <div className="text-green-500 font-bold text-lg mt-2">
-          {product.price} ₾
+          {product.price} $
         </div>
         <p className="text-gray-600 text-sm mt-2">
           {description || "აღწერა არ არის ხელმისაწვდომი"}
@@ -48,8 +48,6 @@ const userId = await getUserIdFromSupabase();
     </div>
   );
 }
-
-
 
 // export default function ProductCard({
 //   product,

@@ -10,7 +10,7 @@ function getLocale(request) {
 
   let headers = { "accept-language": `${accepted};q=0.5` };
   let languages = new Negotiator({ headers }).languages();
-  console.log(languages, "languages");
+  // console.log(languages, "languages");
   let locales = ["en-US", "ka"];
   let defaultLocale = "ka";
   return match(languages, locales, defaultLocale);
@@ -49,6 +49,6 @@ export const config = {
     "/product-list",
     "/sign-in",
     "/sign-up",
-    "/cart"
+    "/cart",
   ],
 };
