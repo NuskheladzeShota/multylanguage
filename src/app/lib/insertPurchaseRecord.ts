@@ -29,12 +29,12 @@ export async function insertPurchaseRecord(userId: string, checkoutId: string): 
     }
 
     const productId = session.metadata?.product_id || null; 
-
+    debugger
     const purchaseData = {
       user_id: userId,
       checkout_id: checkoutId,
       purchase_type: purchaseType,
-      product_ids: productId ? [productId] : null,
+      product_ids: productId ? productId : null,
     };
 
     const { error } = await (await supabase)

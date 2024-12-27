@@ -1,7 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import "./style.css";
+import { supabase } from  '../../lib/supaBase/supabaseClient';
+
 
 let tagArray = ["", "", ""]; // Predefined empty tags for the UI
 type ImageState = {
@@ -9,11 +11,24 @@ type ImageState = {
   file: File | null;
 };
 export default function AddNewProduct() {
+  const [user, setUser] = useState(null);
   const [message, setMessage] = useState<string | null>(null);
   const[imageUrl, setImageUrl] = useState<ImageState | null>({
     url: "",
     file:null,
   })
+
+   useEffect(() => {
+     const fetchUser = async () => {
+       try {
+         const { data: { user } } = await supabase.auth.getUser();
+         setUser(user);
+       } catch (error) {
+         console.error("Error fetching user:", error);
+       }
+     };
+     fetchUser();
+   }) 
 
   function handleImageUpload(file:File) {
     let url = URL.createObjectURL(file);;
@@ -33,64 +48,67 @@ export default function AddNewProduct() {
   async function submitProduct(formData: FormData, formElement: HTMLFormElement) {
     try {
       // Collect form data
-      const title_en = formData.get("title_en") as string;
-      const title_ge = formData.get("title_ge") as string;
-      const description_en = formData.get("description_en") as string;
-      const description_ge = formData.get("description_ge") as string;
-      const gender = formData.get("gender") as string;
-      const category = formData.get("category") as string;
-      const price = formData.get("price") as string;
-      const size = formData.get("size") as string;
+
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
       debugger
-      // Collect and filter tags
-      const tags: string[] = [];
-      for (let i = 0; i < tagArray.length; i++) {
-        const tag = formData.get(`tag-${i}`) as string;
-        if (tag?.trim()) tags.push(tag.trim());
+      if(user) {
+        const title_en = formData.get("title_en") as string;
+        const title_ge = formData.get("title_ge") as string;
+        const description_en = formData.get("description_en") as string;
+        const description_ge = formData.get("description_ge") as string;
+        const gender = formData.get("gender") as string;
+        const category = formData.get("category") as string;
+        const price = formData.get("price") as string;
+        const size = formData.get("size") as string;
+        debugger
+        // Collect and filter tags
+        const tags: string[] = [];
+        for (let i = 0; i < tagArray.length; i++) {
+          const tag = formData.get(`tag-${i}`) as string;
+          if (tag?.trim()) tags.push(tag.trim());
+        }
+        // Validate required fields
+        if (!title_en || !title_ge || !price || !category || !size) {
+          throw new Error("Please fill out all required fields.");
+        }
+        const productData = {
+          title_en,
+          title_ge,
+          description_en,
+          description_ge,
+          gender,
+          category,
+          price,
+          size,
+          tags,
+          name:imageUrl?.file?.name as string,
+          image: await fileToBase64(),
+        };
+        // Send the product data to the API
+        const response = await fetch("/api/addProduct", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(productData),
+        });
+        if (!response.ok) {
+          throw new Error(`Failed to add product: ${response.statusText}`);
+        }
+        const result = await response.json();
+        console.log("Product added successfully:", result);
+        // Clear the form inputs
+        formElement.reset();
+        deleteImage();
+        // Set success message
+        setMessage("Product added successfully!");
+        hideMessageAfterDelay();
+      }else{
+        setMessage("Login to add product!");
+        hideMessageAfterDelay();
       }
 
-      // Validate required fields
-      if (!title_en || !title_ge || !price || !category || !size) {
-        throw new Error("Please fill out all required fields.");
-      }
-
-      
-      const productData = {
-        title_en,
-        title_ge,
-        description_en,
-        description_ge,
-        gender,
-        category,
-        price,
-        size,
-        tags,
-        name:imageUrl?.file?.name as string,
-        image: await fileToBase64(),
-      };
-
-      // Send the product data to the API
-      const response = await fetch("/api/addProduct", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(productData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to add product: ${response.statusText}`);
-      }
-
-      const result = await response.json();
-      console.log("Product added successfully:", result);
-
-      // Clear the form inputs
-      formElement.reset();
-      deleteImage();
-      // Set success message
-      setMessage("Product added successfully!");
-      hideMessageAfterDelay();
     } catch (error) {
       console.error("Error adding product:", error);
       // Set error message
