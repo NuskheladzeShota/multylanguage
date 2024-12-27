@@ -5,15 +5,16 @@ import Logo from "../../../../public/images/Header Logo.webp";
 import DropDown from "../DropDown/DropDown";
 import { cilSun, cilMoon, cilScreenDesktop, cilSync } from "@coreui/icons";
 import { useEffect, useState } from "react";
-import { useUser } from "@auth0/nextjs-auth0/client";
-import { CSpinner } from "@coreui/react";
-import AuthenticationButton from "../logoutButton/LoggoutButton";
+// import { useUser } from "@auth0/nextjs-auth0/client";
+// import { CSpinner } from "@coreui/react";
+// import AuthenticationButton from "../logoutButton/LoggoutButton";
 import { useLocale } from "../providers/LanguageContext";
 
 import LocaleChange from "../LanguageChange/LanguageChange";
+import HeaderAuth from "./header-auth";
 
 const Header = (dict) => {
-  const { user, error, isLoading } = useUser();
+  const [user, setUser] = useState(null);
   const { locale, setLocale } = useLocale();
   const [currentTheme, setCurrentTheme] = useState(cilSync);
 
@@ -110,38 +111,65 @@ const Header = (dict) => {
         </Link>
         <nav className="rounded-3xl flex- flex-row  border border-solid dark:border-header-hover-dark h-20 items-center p-2  hidden sm:block">
           <ul className="gap-5 flex  list-none flex-row">
-            <li className={listItemStyle}>{dict.dict.Equipment}</li>
-            <li className={listItemStyle}>{dict.dict.Trainers}</li>
-            <li className={listItemStyle}>{dict.dict.Certificates}</li>
-            <li className={listItemStyle}>{dict.dict.Schedules}</li>
+            {/* <li className={listItemStyle}>{dict.dict.Equipment}</li>
+            <li className={listItemStyle}>{dict.dict.Trainers}</li> */}
+            {/* <li className={listItemStyle}>{dict.dict.Certificates}</li>
+            <li className={listItemStyle}>{dict.dict.Schedules}</li> */}
             <li className={`${listItemStyle} hidden l:block`}>
               {dict.dict.Locations}
             </li>
-            <Link href={`/${locale}/profile`}>
+            {/* <Link href={`/${locale}/profile`}>
               <li className={`${listItemStyle} hidden xl:block`}>
                 {dict.dict.Profile}
               </li>
-            </Link>
+            </Link> */}
 
-            <Link href={`/${locale}/blog`}>
+            {user ? (
+              <Link href={`/${locale}/profile`}>
+                <li className={`${listItemStyle} hidden xl:block`}>
+                  {dict.dict.Profile}
+                </li>
+              </Link>
+            ) : (
+              <div></div>
+            )}
+
+            {/* <Link href={`/${locale}/blog`}>
               <li className={`${listItemStyle} hidden xl:block`}>
                 {dict.dict.Blog}
               </li>
-            </Link>
-            <Link href={`/${locale}/products`}>
+            </Link> */}
+            {/* <Link href={`/${locale}/products`}>
+              <li className={`${listItemStyle} hidden xl:block`}>
+                {dict.dict.Products}
+              </li>
+            </Link> */}
+            <Link href={`/${locale}/product-list`}>
               <li className={`${listItemStyle} hidden xl:block`}>
                 {dict.dict.Products}
               </li>
             </Link>
-            <Link href={`/${locale}/posts`}>
+            {/* <Link href={`/${locale}/posts`}>
               <li className={`${listItemStyle} hidden xl:block`}>
                 {dict.dict.Posts}
               </li>
+            </Link> */}
+            <Link href={`/${locale}/addNewProduct`}>
+              <li className={`${listItemStyle} hidden xl:block`}>Add New</li>
             </Link>
+            {user ? (
+              <Link href={`/${locale}/cart`}>
+                <li className={`${listItemStyle} hidden xl:block`}>Cart</li>
+              </Link>
+            ) : (
+              <div></div>
+            )}
+            <li className=" p-5 text-center cursor-pointer"></li>
           </ul>
         </nav>
       </div>
       <div className="flex flex-row gap-2 items-center mr-5 justify-center z-10">
+        <HeaderAuth user={user} setUser={setUser} />
         <LocaleChange></LocaleChange>
         <div>
           <DropDown
@@ -151,7 +179,7 @@ const Header = (dict) => {
             type="Theme"
           ></DropDown>
         </div>
-        <div className="">
+        {/* <div className="">
           {isLoading ? (
             <AuthenticationButton
               type="Loading"
@@ -170,7 +198,7 @@ const Header = (dict) => {
               buttonText={dict.dict.Login}
             ></AuthenticationButton>
           )}
-        </div>
+        </div> */}
       </div>
     </header>
   );
