@@ -109,13 +109,13 @@ const Header = (dict) => {
         >
           <img src={Logo.src} alt="logo"></img>
         </Link>
-        <nav className="rounded-3xl flex- flex-row  border border-solid dark:border-header-hover-dark h-20 items-center p-2  hidden sm:block">
+        <nav className="rounded-3xl flex- flex-row  border border-solid dark:border-header-hover-dark h-20 items-center p-2 sm:block">
           <ul className="gap-5 flex  list-none flex-row">
             {/* <li className={listItemStyle}>{dict.dict.Equipment}</li>
             <li className={listItemStyle}>{dict.dict.Trainers}</li> */}
             {/* <li className={listItemStyle}>{dict.dict.Certificates}</li>
             <li className={listItemStyle}>{dict.dict.Schedules}</li> */}
-            <li className={`${listItemStyle} hidden l:block`}>
+            <li className={`${listItemStyle} `}>
               {dict.dict.Locations}
             </li>
             {/* <Link href={`/${locale}/profile`}>
@@ -126,7 +126,7 @@ const Header = (dict) => {
 
             {user ? (
               <Link href={`/${locale}/profile`}>
-                <li className={`${listItemStyle} hidden xl:block`}>
+                <li className={`${listItemStyle} `}>
                   {dict.dict.Profile}
                 </li>
               </Link>
@@ -145,7 +145,7 @@ const Header = (dict) => {
               </li>
             </Link> */}
             <Link href={`/${locale}/product-list`}>
-              <li className={`${listItemStyle} hidden xl:block`}>
+              <li className={`${listItemStyle}`}>
                 {dict.dict.Products}
               </li>
             </Link>
@@ -155,11 +155,11 @@ const Header = (dict) => {
               </li>
             </Link> */}
             <Link href={`/${locale}/addNewProduct`}>
-              <li className={`${listItemStyle} hidden xl:block`}>Add New</li>
+              <li className={`${listItemStyle}`}>Add New</li>
             </Link>
             {user ? (
               <Link href={`/${locale}/cart`}>
-                <li className={`${listItemStyle} hidden xl:block`}>Cart</li>
+                <li className={`${listItemStyle} `}>Cart</li>
               </Link>
             ) : (
               <div></div>
