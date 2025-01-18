@@ -4,7 +4,7 @@ import Stripe from "stripe";
 import { createClient } from "../../lib/supaBase/server"; // Adjust the path if necessary
 import { decode } from 'base64-arraybuffer'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 /**
  * POST method to handle adding a product
@@ -12,6 +12,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
  * @returns {Response}
  */
 export async function POST(request: NextRequest) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   try {
     const supabase = await createClient();
     const body = await request.json(); // Parse the JSON body
