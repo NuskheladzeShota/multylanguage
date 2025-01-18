@@ -1,7 +1,9 @@
 "use client";
 
-import { supabase } from "@/lib/supabaseClient";
+
+// import { supabase } from "@/lib/supabaseClient";
 import { useState, useEffect } from "react";
+import { supabase } from "../../../app/components/lib/supabase";
 
 const PurchasesManager = () => {
   const [purchases, setPurchases] = useState<
@@ -10,6 +12,7 @@ const PurchasesManager = () => {
       customer_id: number;
       product_id: number;
       quantity: number;
+
       total_price: number;
       purchase_date: string;
     }[]
